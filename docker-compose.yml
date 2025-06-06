@@ -1,0 +1,72 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  backend:
+    build: ./backend
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./backend:/code
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - rabbitmq
+
+  celery:
+    build: ./backend
+    command: celery -A app worker --loglevel=info
+    volumes:
+      - ./backend:/code
+    env_file:
+      - .env
+    depends_on:
+      - backend
+      - rabbitmq
+
+  celery-beat:
+    build: ./backend
+    command: celery -A app beat --loglevel=info
+    volumes:
+      - ./backend:/code
+    env_file:
+      - .env
+    depends_on:
+      - backend
+      - rabbitmq
+
+  reporting:
+    build: ./reporting
+    volumes:
+      - ./reporting:/app
+    env_file:
+      - .env
+    ports:
+      - "9000:9000"
+    depends_on:
+      - mongo
+
+volumes:
+  pgdata:

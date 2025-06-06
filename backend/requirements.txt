@@ -1,0 +1,8 @@
+Django>=4.2
+djangorestframework
+psycopg2-binary
+requests
+python-dotenv
+celery
+django-celery-beat
+pymongo
