@@ -1,0 +1,30 @@
+@baseUrl = http://localhost:8000/api
+
+### Criar filme manualmente
+POST {{baseUrl}}/movies/
+Content-Type: application/json
+
+{
+  "tmdb_id": 9001,
+  "title": "Filme Teste",
+  "release_date": "2023-10-15",
+  "vote_average": 9.0,
+  "popularity": 999,
+  "overview": "Descrição de teste.",
+  "is_custom": true
+}
+
+### Listar filmes
+GET {{baseUrl}}/movies/
+
+### Filtro por nota mínima
+GET {{baseUrl}}/movies/?vote_average__gte=8
+
+### Filtro por ano de lançamento
+GET {{baseUrl}}/movies/?release_date__gte=2000-01-01&release_date__lte=2025-12-31
+
+### Pesquisa por palavra-chave
+GET {{baseUrl}}/movies/?search=teste
+
+### Ordenar por popularidade decrescente
+GET {{baseUrl}}/movies/?ordering=-popularity
