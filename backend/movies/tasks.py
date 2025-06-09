@@ -1,22 +1,24 @@
-from celery import shared_task
-import requests
-from .models import Movie
-from django.conf import settings
+from pymongo import MongoClient
+from bson.objectid import ObjectId
+import os
 
 @shared_task
-def fetch_movies():
-    url = f"https://api.themoviedb.org/3/movie/popular?api_key={settings.TMDB_API_KEY}&language=en-US&page=1"
-    response = requests.get(url)
-    if response.status_code == 200:
-        for item in response.json().get('results', []):
-            Movie.objects.update_or_create(
-                tmdb_id=item['id'],
-                defaults={
-                    'title': item['title'],
-                    'release_date': item['release_date'],
-                    'vote_average': item['vote_average'],
-                    'popularity': item['popularity'],
-                    'overview': item['overview'],
-                    'is_custom': False,
-                }
-            )
+def sync_movie_to_mongo(movie_id):
+    from .models import Movie
+    movie = Movie.objects.get(id=movie_id)
+    client = MongoClient(os.getenv("MONGO_URI"))
+    db = client.movies
+    collection = db.movies
+
+    collection.update_one(
+        {"tmdb_id": movie.tmdb_id},
+        {"$set": {
+            "tmdb_id": movie.tmdb_id,
+            "title": movie.title,
+            "release_date": str(movie.release_date),
+            "vote_average": movie.vote_average,
+            "popularity": movie.popularity,
+            "overview": movie.overview,
+        }},
+        upsert=True
+    )

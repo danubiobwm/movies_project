@@ -6,3 +6,4 @@ python-dotenv
 celery
 django-celery-beat
 pymongo
+django-filter
