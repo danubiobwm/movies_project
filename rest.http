@@ -5,10 +5,10 @@ POST {{baseUrl}}/movies/
 Content-Type: application/json
 
 {
-  "tmdb_id": 9005,
+  "tmdb_id": 9001,
   "title": "Filme Teste",
   "release_date": "2023-10-15",
-  "vote_average": 3.0,
+  "vote_average": 9.0,
   "popularity": 999,
   "overview": "Descrição de teste.",
   "is_custom": true
@@ -28,17 +28,3 @@ GET {{baseUrl}}/movies/?search=teste
 
 ### Ordenar por popularidade decrescente
 GET {{baseUrl}}/movies/?ordering=-popularity
-###
-GET http://localhost:8000/api/movies/
-
-### Browser URLs
-Django
-http://localhost:8000/api/movies/
-
-###
-FastAPI
-http://localhost:9000/docs
-
-###
-RabbitMQ
-http://localhost:15672 (usuário/senha: guest)

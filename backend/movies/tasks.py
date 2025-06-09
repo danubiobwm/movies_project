@@ -1,11 +1,10 @@
 from pymongo import MongoClient
-from bson.objectid import ObjectId
 import os
 
-@shared_task
 def sync_movie_to_mongo(movie_id):
     from .models import Movie
     movie = Movie.objects.get(id=movie_id)
+
     client = MongoClient(os.getenv("MONGO_URI"))
     db = client.movies
     collection = db.movies
