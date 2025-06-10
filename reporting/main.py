@@ -9,9 +9,17 @@ collection = db["movies"]
 app = FastAPI()
 
 @app.get("/report/highest-rated-movies")
-def highest_rated():
-    movies = collection.find().sort("vote_average", -1).limit(10)
-    return [{"title": m["title"], "vote_average": m["vote_average"]} for m in movies]
+def get_highest_rated_movies():
+    movies = list(
+        collection.find(
+            { "vote_average": { "$ne": None } }
+        ).sort("vote_average", -1).limit(10)
+    )
+    for m in movies:
+        m["_id"] = str(m["_id"])
+    return movies
+
+
 
 @app.get("/report/popular-movies-summary")
 def popularity_summary():
@@ -24,3 +32,11 @@ def popularity_summary():
         {"$sort": {"_id": 1}}
     ]
     return list(collection.aggregate(pipeline))
+
+@app.get("/debug/movies")
+def debug_movies():
+    movies = list(collection.find().limit(5))
+    for movie in movies:
+        movie["_id"] = str(movie["_id"])
+    return movies
+

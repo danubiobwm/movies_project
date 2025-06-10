@@ -18,6 +18,8 @@ def sync_movie_to_mongo(movie_id):
             "vote_average": movie.vote_average,
             "popularity": movie.popularity,
             "overview": movie.overview,
+            "rating": movie.vote_average,
+
         }},
         upsert=True
     )
